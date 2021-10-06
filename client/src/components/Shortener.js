@@ -1,47 +1,14 @@
-import { useEffect, useState } from 'react';
-import { nanoid } from 'nanoid';
+import { useEffect } from 'react';
 import axiosInstance from '../api';
+import useHelpers from '../useHelpers';
 
 const Shortener = () => {
-    const [urlList, setUrlList] = useState([]);
-    const [url, setUrl] = useState('');
-    const [code, setCode] = useState('');
-
-    /**
-     * Checks to see if a url has already been added to the database and returns it's code it already exists.
-     * @returns {object} urlInfo
-     */
-    const checkIfUrlExists = () => {
-        if (urlList.some(link => link.url === url)) {
-            const index = urlList.findIndex(link => link.url === url);
-            return urlList[index];
-        }
-    };
-
-    const handleSubmit = async event => {
-        event.preventDefault();
-        const existingUrl = checkIfUrlExists();
-
-        if (existingUrl) {
-            setUrl(existingUrl?.url);
-            setCode(existingUrl?.code);
-            return;
-        }
-
-        try {
-            const nanoCode = nanoid(7);
-            setCode(nanoCode);
-            await axiosInstance.post('/api/urls/', { url, code: nanoCode });
-        } catch (error) {
-            console.error('Error adding new url', error.message);
-        }
-    };
+    const { code, url, setUrl, setUrlList, handleSubmit } = useHelpers();
 
     useEffect(() => {
         const getAllUrls = async () => {
             try {
                 const { data } = await axiosInstance.get('/api/urls');
-                console.log('urls ', data);
                 setUrlList(data);
             } catch (error) {
                 console.error('Error getting all urls from server: ', error.message);
@@ -49,7 +16,7 @@ const Shortener = () => {
         };
 
         getAllUrls();
-    }, []);
+    }, [setUrlList]);
 
     return (
         <>
@@ -67,7 +34,14 @@ const Shortener = () => {
                 />
                 <input type="submit" value="Shorten" className="container__submit" />
             </form>
-            {code && <a className="container__link" href={url}>{`sh.rt/${code}`}</a>}
+            {code && (
+                <a
+                    className="container__link"
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                >{`sh.rt/${code}`}</a>
+            )}
         </>
     );
 };
