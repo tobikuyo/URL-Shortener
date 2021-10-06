@@ -1,4 +1,28 @@
+import { useEffect, useState } from 'react';
+import axiosInstance from '../api';
+
+const initialUrlInfo = {
+    url: '',
+    code: ''
+};
+
 const Shortener = () => {
+    const [urlList, setUrlList] = useState([]);
+    const [urlInfo, setUrlInfo] = useState(initialUrlInfo);
+
+    useEffect(() => {
+        const getAllUrls = async () => {
+            try {
+                const { data } = await axiosInstance.get('/urls');
+                // TODO: Check how the data comes from the server and change the urlList state
+                // setUrlList(data);
+            } catch (error) {
+                console.error('Error getting all urls from server: ', error.message);
+            }
+        };
+
+        getAllUrls();
+    }, []);
     return (
         <>
             <h1 className="container__heading">Short links, big results</h1>
