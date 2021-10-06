@@ -77,8 +77,14 @@ body,
     transition: all 0.2s ease-in-out;
     border: none;
     font-size: 1.6rem;
+    cursor: pointer;
 }
 
 .container__submit:hover {
     background-color: #0236b9;
+}
+
+.container__link {
+    margin-top: 2rem;
+    cursor: pointer;
 }
