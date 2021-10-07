@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axiosInstance from './api';
 
 const useHelpers = () => {
@@ -12,17 +12,16 @@ const useHelpers = () => {
      * @returns {object} urlInfo
      */
     const checkIfUrlExists = () => {
-        if (urlList.some(link => link.url === url)) {
-            const index = urlList.findIndex(link => link.url === url);
-            return urlList[index];
-        }
+        const urlItem = urlList.find(link => link.url === url);
+        return urlItem;
     };
 
     /**
      * Checks to see how a user has written the url they want to shorten and it adjusts it accordingly.
      * @returns {string}  url
      */
-    const formatUrl = () => {
+    const formatUrl = url => {
+        if (typeof url !== 'string') return;
         const urlFirstThree = url.substring(0, 3);
 
         if (urlFirstThree === 'htt') {
@@ -39,14 +38,14 @@ const useHelpers = () => {
         const existingUrl = checkIfUrlExists();
 
         if (existingUrl) {
-            const formattedUrl = formatUrl();
+            const formattedUrl = formatUrl(url);
             setUrl(formattedUrl);
             setCode(existingUrl.code);
             return;
         }
 
         const nanoCode = nanoid(7);
-        const formattedUrl = formatUrl();
+        const formattedUrl = formatUrl(url);
         setUrl(formattedUrl);
         setCode(nanoCode);
         setUrlList([...urlList, { url: formattedUrl, code: nanoCode }]);
@@ -58,7 +57,20 @@ const useHelpers = () => {
         }
     };
 
-    return { code, url, setUrl, setUrlList, handleSubmit };
+    useEffect(() => {
+        const getAllUrls = async () => {
+            try {
+                const { data } = await axiosInstance.get('/api/urls');
+                setUrlList(data);
+            } catch (error) {
+                console.error('Error getting all urls from server: ', error.message);
+            }
+        };
+
+        getAllUrls();
+    }, [setUrlList]);
+
+    return { code, url, setUrl, urlList, handleSubmit, formatUrl };
 };
 
 export default useHelpers;

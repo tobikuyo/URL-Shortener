@@ -1,22 +1,7 @@
-import { useEffect } from 'react';
-import axiosInstance from '../api';
 import useHelpers from '../useHelpers';
 
 const Shortener = () => {
-    const { code, url, setUrl, setUrlList, handleSubmit } = useHelpers();
-
-    useEffect(() => {
-        const getAllUrls = async () => {
-            try {
-                const { data } = await axiosInstance.get('/api/urls');
-                setUrlList(data);
-            } catch (error) {
-                console.error('Error getting all urls from server: ', error.message);
-            }
-        };
-
-        getAllUrls();
-    }, [setUrlList]);
+    const { code, url, setUrl, handleSubmit } = useHelpers();
 
     return (
         <>
@@ -40,7 +25,7 @@ const Shortener = () => {
                     href={url}
                     target="_blank"
                     rel="noreferrer"
-                >{`sh.rt/${code}`}</a>
+                >{`shrt.io/${code}`}</a>
             )}
         </>
     );
