@@ -5,4 +5,4 @@ class Shorturl(models.Model):
     code = models.CharField(max_length=7)
 
     def _str_(self):
-        return self.title
+        return self.url
