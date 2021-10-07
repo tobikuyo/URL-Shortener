@@ -25,7 +25,7 @@ const Shortener = () => {
                     href={url}
                     target="_blank"
                     rel="noreferrer"
-                >{`shrt.io/${code}`}</a>
+                >{`https://shrinkio.herokuapp.com/${code}`}</a>
             )}
         </>
     );
